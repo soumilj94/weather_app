@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/additional_item.dart';
 import 'package:weather_app/forecast_item.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -60,12 +61,12 @@ class HomeScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                ForecastItem(),
-                ForecastItem(),
-                ForecastItem(),
-                ForecastItem(),
-                ForecastItem(),
-                ForecastItem(),
+                ForecastItem(hour: "12:00", icon: Icons.sunny, temp: "35"),
+                ForecastItem(hour: "13:00", icon: Icons.sunny, temp: "35"),
+                ForecastItem(hour: "14:00", icon: Icons.cloud, temp: "36"),
+                ForecastItem(hour: "15:00", icon: Icons.cloud, temp: "38"),
+                ForecastItem(hour: "16:00", icon: Icons.sunny, temp: "37"),
+                ForecastItem(hour: "17:00", icon: Icons.cloud, temp: "35"),
               ],
             ),
           ),
@@ -79,25 +80,12 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          Row(
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Card(
-                  color: Colors.transparent,
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: Column(
-                      children: [
-                        const Text("Humidity", style: TextStyle(fontSize: 20),),
-                        IconButton(onPressed: (){}, icon: const Icon(Icons.water_drop,size: 30),),
-                        const Text("99", style: TextStyle(fontSize: 20),),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              AdditionalItem(icon: Icons.water_drop,label: "Humidity", value: "99"),
+              AdditionalItem(icon: Icons.air, label: "Wind Speed", value: "124",),
+              AdditionalItem(icon: Icons.beach_access, label: "Pressure", value: "87"),
             ],
           ),
         ],
