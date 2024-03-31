@@ -22,8 +22,10 @@ class AdditionalItem extends StatelessWidget {
         child: Column(
           children: [
             Text(label, style: const TextStyle(fontSize: 20),),
+            const SizedBox(height: 12),
             Icon( icon,size: 30),
-            Text(value, style: const TextStyle(fontSize: 20),),
+            const SizedBox(height: 12),
+            Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
           ],
         ),
       ),
