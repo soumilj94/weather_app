@@ -4,6 +4,8 @@ import 'package:weather_app/additional_item.dart';
 import 'package:weather_app/api.dart';
 import 'package:weather_app/forecast_item.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String cityName = "";
+  late Future<Map<String, dynamic>> weather;
 
   Future<Map<String, dynamic>> getCurrentWeather() async {
     try {
@@ -34,6 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    weather = getCurrentWeather();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -43,11 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.refresh))
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  HapticFeedback.heavyImpact();
+                  weather = getCurrentWeather();
+                });
+              },
+              icon: const Icon(Icons.refresh))
         ],
       ),
       body: FutureBuilder(
-        future: getCurrentWeather(),
+        future: weather,
         builder: (context, snapshot) {
           // print(snapshot);
           // print(snapshot.runtimeType);
@@ -76,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final currentWeatherData = data['list'][0];
           final currentTemp = currentWeatherData['main']['temp'];
+          final ctCel = (currentTemp - 273.15).round();
           final currentSky = currentWeatherData['weather'][0]['description'];
           final humidity = currentWeatherData['main']['humidity'];
           final windSpeed = currentWeatherData['wind']['speed'];
@@ -96,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ))),
               Center(
                 child: Text(
-                  "$currentTemp K",
+                  "$ctCel °C",
                   style: const TextStyle(fontSize: 80),
                 ),
               ),
@@ -118,26 +135,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              // Forecast Items
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (int i = 1; i < 10; i++) ...[
-                      ForecastItem(
-                          hour: data['list'][i]['dt_txt']
-                              .toString()
-                              .split(" ")[1]
-                              .split(":")
-                              .sublist(0, 2)
-                              .join(":"),
-                          icon:
-                              data['list'][i]['weather'][0]['main'] == 'Clouds'
-                                  ? Icons.cloud
-                                  : Icons.sunny,
-                          temp: "${data['list'][i]['main']['temp']} K"),
-                    ],
-                  ],
+              SizedBox(
+                height: 161,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    final time = DateTime.parse(data['list'][index]['dt_txt']);
+                    final temp = data['list'][index]['main']['temp'];
+                    final tempCel = (temp-273.15).round().toString();
+                    return ForecastItem(
+                      hour: DateFormat.j().format(time),
+                      icon:
+                          data['list'][index]['weather'][0]['main'] == 'Clouds'
+                              ? Icons.cloud
+                              : Icons.sunny,
+                      temp: tempCel,
+                    );
+                  },
                 ),
               ),
 
